@@ -18,30 +18,22 @@ class BaseRepository(Generic[TCreate, TRead]):
         data["_id"] = result.inserted_id
         return self.read_model(**data)
 
-    def get_by_id(self, Id: str | ObjectId) -> TRead | None:
-        if isinstance(Id, str):
-            Id = ObjectId(Id)
-        data = self.collection.find_one({"_id": Id})
-        return self.read_model(**data) if data else None
+    def get_by_id(self, Id: ObjectId) -> TRead | None:
+        if not (data := self.collection.find_one({"_id": Id})):
+            return None
+        return self.read_model(**data)
 
-    def find_all(self) -> list[TRead]:
-        return [self.read_model(**doc) for doc in self.collection.find()]
+    def find_all(self, page: int = 1, size: int = 100) -> list[TRead]:
+        skip = (page - 1) * size
+        return [self.read_model(**data) for data in self.collection.find().skip(skip).limit(size)]
 
-    def delete(self, Id: str | ObjectId) -> None:
-        if isinstance(Id, str):
-            Id = ObjectId(Id)
-        self.collection.delete_one({"_id": Id})
+    def delete(self, Id: ObjectId) -> bool:
+        return self.collection.delete_one({"_id": Id}).deleted_count > 0
 
-    def update(self, Id: str | ObjectId, **fields) -> TRead | None:
-        update = {k: v for k, v in fields.items() if v is not None}
-        if not update:
-            return self.get_by_id(Id)
-        if isinstance(Id, str):
-            Id = ObjectId(Id)
+    def update(self, Id: ObjectId, **fields) -> TRead | None:
+        if not (data := self.collection.find_one({"_id": Id})):
+            return None
 
-        data = self.collection.find_one_and_update(
-            {"_id": Id},
-            {"$set": update},
-            return_document=ReturnDocument.AFTER
-        )
-        return self.read_model(**data) if data else None
+        updated = {**data, **{k: v for k, v in fields.items() if v is not None}}
+        self.collection.replace_one({"_id": Id}, updated)
+        return self.read_model(**updated)
