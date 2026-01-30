@@ -23,8 +23,9 @@ class BaseRepository(Generic[TCreate, TRead]):
             return None
         return self.read_model(**data)
 
-    def find_all(self) -> list[TRead]:
-        return [self.read_model(**data) for data in self.collection.find()]
+    def find_all(self, skip: 1, limit: 1000) -> list[TRead]:
+        result = list(self.collection.find().skip(skip).limit(limit))
+        return [self.read_model(**data) for data in result]
 
     def delete(self, Id: ObjectId) -> bool:
         return self.collection.delete_one({"_id": Id}).deleted_count > 0
