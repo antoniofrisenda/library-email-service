@@ -11,7 +11,7 @@ class EmailService:
         self.log_repo = repo2
 
     def send_email(self, payload: EmailCreate) -> EmailRead:
-        model = self.email_repo.insert(EmailRead(
+        model = self.email_repo.insert(EmailCreate(
             email_type=payload.email_type,
             address_to=payload.address_to,
             body_fields=payload.body_fields or {},
@@ -37,5 +37,5 @@ class EmailService:
             )
             raise
 
-        self.log_repo.insert(LogRead.model_validate(log.model_dump()))
+        self.log_repo.insert(log)
         return model
