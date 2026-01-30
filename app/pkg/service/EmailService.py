@@ -2,7 +2,7 @@ import json
 from app.pkg.config import send
 from datetime import datetime, timezone
 from app.pkg.repository import EmailRepository, LogRepository
-from app.pkg.model import EmailCreate, EmailRead, LogCreate, LogRead, EmailOutcomeEnum
+from app.pkg.model import EmailCreate, EmailRead, LogCreate, EmailOutcomeEnum
 
 
 class EmailService:

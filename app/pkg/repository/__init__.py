@@ -1,2 +1,2 @@
-from .EmailRepository import EmailRepository
 from .LogRepository import LogRepository
+from .EmailRepository import EmailRepository
