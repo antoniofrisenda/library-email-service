@@ -14,9 +14,9 @@ def get_instance (db=Depends(MongoDB.connect)) -> Service:
 
 #endpoint di test del servizio
 @router.post("/v1", status_code=status.HTTP_200_OK)
-def send_email(payload: EmailCreate, service : Service = Depends(get_instance)) -> dict:
+def send_email(payload: EmailCreate, service: Service = Depends(get_instance)) -> dict:
     try:
-        service = service.send_email(payload)
-        return {"status": service.email_type.value, "id": str(service.id)}
+        email = service.send_email(payload)
+        return {"status": email.email_type.value, "id": str(email.id)}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))

@@ -9,7 +9,7 @@ class EmailTypeEnum(str, Enum):
     RETURN = "RETURN"
 
 PyObjectId = Annotated[ObjectId,
-    BeforeValidator(lambda S: ObjectId(S) if isinstance(S, str) else S),
+    BeforeValidator(lambda v: ObjectId(v) if isinstance(v, str) else v),
 ]
 
 class EmailCreate(BaseModel):
