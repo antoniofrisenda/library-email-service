@@ -16,5 +16,9 @@ def get_instance(db=Depends(MongoDB.connect)) -> Service:
 
 @router.post("/v1", status_code=status.HTTP_200_OK)
 def send_email(payload: EmailDTO, service: Service = Depends(get_instance)) -> dict:
-    email = service.send_email(payload)
-    return {"status": email.email_type.value, "id": str(email.id)}
+    request = service.send_email(payload)
+    return {
+        "status": request.outcome,
+        "email_id": request.email_id,
+        "content": payload.body_fields
+    }

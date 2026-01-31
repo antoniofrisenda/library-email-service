@@ -1,36 +1,27 @@
 import json
 from app.pkg.config import send
-from app.pkg.domain import EmailOutcomeEnum
+from app.pkg.domain import LogModel, EmailOutcomeEnum
 from app.pkg.repository import EmailRepository, LogRepository
-from app.pkg.factory import EmailDTO, LogDTO, EmailMapper, LogMapper
+from app.pkg.factory import EmailDTO, LogDTO, dto_to_email, log_to_dto
 
 
 class EmailService:
-    def __init__(self, repo1: EmailRepository, repo2: LogRepository):
-        self.email_repo = repo1
-        self.log_repo = repo2
+    def __init__(self, email_repo: EmailRepository, log_repo: LogRepository):
+        self.email_repo = email_repo
+        self.log_repo = log_repo
 
-    def send_email(self, payload: EmailDTO) -> EmailDTO:
-        model = self.email_repo.insert(EmailMapper.dto_to_email(payload))
-        log_dto = None
+    def send_email(self, payload: EmailDTO) -> LogDTO:
+        model = self.email_repo.insert(dto_to_email(payload))
 
         try:
             send(
                 to=payload.address_to,
                 body=json.dumps(payload.body_fields or {}, ensure_ascii=False),
             )
+            log = LogModel(email_id=model._id, outcome=EmailOutcomeEnum.SENT)
 
-            log_dto = LogDTO(email_id=model.id,
-                             outcome=EmailOutcomeEnum.SENT.value)
         except Exception as exc:
-            log_dto = LogDTO(
-                email_id=model.id,
-                outcome=EmailOutcomeEnum.FAILED.value,
-                error_msg=str(exc),
-            )
+            log = LogModel(email_id=model._id, outcome=EmailOutcomeEnum.FAILED, error_msg=str(exc))
             raise
-        finally:
-            if log_dto:
-                self.log_repo.insert(LogMapper.dto_to_log(log_dto))
-
-        return EmailMapper.email_to_dto(model)
+        
+        return log_to_dto(self.log_repo.insert(log))

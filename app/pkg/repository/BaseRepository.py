@@ -1,7 +1,7 @@
 from bson import ObjectId
+from dataclasses import asdict
 from typing import Type, TypeVar, Generic
 from pymongo.collection import Collection
-from dataclasses import asdict, is_dataclass
 
 T = TypeVar("T")
 
@@ -12,10 +12,7 @@ class BaseRepository(Generic[T]):
         self.model = model
 
     def _to_mongo(self, obj: T) -> dict:
-        if not is_dataclass(obj):
-            raise TypeError("Repository supports only dataclass domain models")
-
-        data = asdict(obj)
+        data = asdict(obj) # type: ignore
         if "id" in data:
             data["_id"] = data.pop("id")
 

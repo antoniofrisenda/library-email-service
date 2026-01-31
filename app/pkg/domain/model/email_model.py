@@ -16,4 +16,4 @@ class Email:
     body_fields: dict | None = None
     sent_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc))
-    id: ObjectId = field(default_factory=ObjectId, alias="_id")
+    _id: ObjectId = field(default_factory=ObjectId)
