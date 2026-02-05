@@ -12,9 +12,9 @@ class EmailOutcome(str, Enum):
 
 @dataclass
 class LogModel:
-    email_id: ObjectId
-    outcome: EmailOutcome
-    error: Optional[str] = None
-    created_at: datetime = field(
+    Email_id: ObjectId
+    Outcome: EmailOutcome
+    Error: Optional[str] = None
+    Created_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc))
     _id: ObjectId = field(default_factory=ObjectId)

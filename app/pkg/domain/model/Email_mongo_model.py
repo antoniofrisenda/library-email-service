@@ -11,10 +11,10 @@ class EmailType(str, Enum):
 
 @dataclass
 class EmailModel:
-    type: EmailType
-    to: str
-    subject: str
-    body: dict | None = None
-    sent_at: datetime = field(
+    Type: EmailType
+    To: str
+    Subject: str
+    Body: dict | None = None
+    Sent_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc))
     _id: ObjectId = field(default_factory=ObjectId)

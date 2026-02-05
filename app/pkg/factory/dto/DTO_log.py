@@ -4,6 +4,6 @@ from dataclasses import dataclass
 
 @dataclass
 class LogDTO:
-    email_id: str
-    outcome: str
-    error: Optional[str] = None
+    Email_id: str
+    Outcome: str
+    Error: Optional[str] = None

@@ -4,8 +4,8 @@ from typing import Optional, Dict
 
 @dataclass
 class EmailDTO:
-    type: str
-    to: str
-    subject: str
-    body: Optional[Dict] = None
+    Type: str
+    To: str
+    Subject: str
+    Body: Optional[Dict] = None
 

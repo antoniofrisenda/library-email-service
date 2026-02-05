@@ -16,17 +16,17 @@ class MailerService:
 
         try:
             mailer(
-                to=payload.to,
-                subject=payload.subject,
-                body=json.dumps(payload.body or {}, ensure_ascii=False),
+                to=payload.To,
+                subject=payload.Subject,
+                body=json.dumps(payload.Body or {}, ensure_ascii=False),
             )
-            register = LogModel(email_id=model._id, outcome=Outcome.SENT)
+            register = LogModel(Email_id=model._id, Outcome=Outcome.SENT)
 
         except Exception as exc:
             register = LogModel(
-                email_id=model._id,
-                outcome=Outcome.FAILED,
-                error=str(exc)
+                Email_id=model._id,
+                Outcome=Outcome.FAILED,
+                Error=str(exc)
             )
             raise
 
@@ -34,8 +34,8 @@ class MailerService:
     
     def consume_message(self, msg: dict) -> LogDTO:
         return self.mailto(EmailDTO(
-            type=msg["type"],
-            to=msg["to"],
-            subject=msg["subject"],
-            body=msg.get("body", {})
+            Type=msg["Type"],
+            To=msg["To"],
+            Subject=msg["Subject"],
+            Body=msg.get("Body", {})
         ))

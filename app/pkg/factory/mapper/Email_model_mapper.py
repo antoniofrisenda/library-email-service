@@ -4,15 +4,17 @@ from app.pkg.domain import EmailModel, Type
 
 def _to_email_model(dto: EmailDTO) -> EmailModel:
     return EmailModel(
-        type=Type(dto.type),
-        to=dto.to,
-        body=dto.body
+        Type=Type(dto.Type),
+        To=dto.To,
+        Subject=dto.Subject,
+        Body=dto.Body
     )
 
 
 def _from_email_model(model: EmailModel) -> EmailDTO:
     return EmailDTO(
-        type=model.type.value,
-        to=model.to,
-        body=model.body
+        Type=model.Type.value,
+        To=model.To,
+        Subject=model.Subject,
+        Body=model.Body
     )
