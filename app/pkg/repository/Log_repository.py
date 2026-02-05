@@ -1,6 +1,6 @@
 from app.pkg.domain import LogModel
 from pymongo.database import Database
-from .BaseRepository import BaseRepository
+from .Base_repository import BaseRepository
 
 
 class LogRepository(BaseRepository[LogModel]):

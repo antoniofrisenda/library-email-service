@@ -30,3 +30,10 @@ class MailerService:
             raise
 
         return log_dto(self.log_repo.insert(register))
+    
+    def consume_message(self, msg: dict) -> LogDTO:
+        return self.mailto(EmailDTO(
+            type=msg["type"],
+            to=msg["to"],
+            body=msg.get("body", {})
+        ))

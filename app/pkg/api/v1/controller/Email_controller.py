@@ -1,8 +1,8 @@
-from app.pkg.service import Service
-from app.pkg.factory import EmailDTO
-from app.pkg.config import Connection
+from pkg.service import Service
+from pkg.factory import EmailDTO
+from pkg.config import Connection
 from fastapi import APIRouter, Depends, status
-from app.pkg.repository import email_repo, log_repo
+from pkg.repository import email_repo, log_repo
 
 router = APIRouter(
     prefix="/api/internal/emails",
