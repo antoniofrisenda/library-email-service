@@ -6,5 +6,6 @@ from typing import Optional, Dict
 class EmailDTO:
     type: str
     to: str
+    subject: str
     body: Optional[Dict] = None
 

@@ -13,6 +13,7 @@ class EmailType(str, Enum):
 class EmailModel:
     type: EmailType
     to: str
+    subject: str
     body: dict | None = None
     sent_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc))

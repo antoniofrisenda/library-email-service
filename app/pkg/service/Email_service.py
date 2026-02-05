@@ -17,6 +17,7 @@ class MailerService:
         try:
             mailer(
                 to=payload.to,
+                subject=payload.subject,
                 body=json.dumps(payload.body or {}, ensure_ascii=False),
             )
             register = LogModel(email_id=model._id, outcome=Outcome.SENT)
@@ -35,5 +36,6 @@ class MailerService:
         return self.mailto(EmailDTO(
             type=msg["type"],
             to=msg["to"],
+            subject=msg["subject"],
             body=msg.get("body", {})
         ))
