@@ -18,6 +18,6 @@ def get_service(session=Depends(Connection.get_db)) -> Service:
 def post_email_request(payload: EmailDTO, service: Service = Depends(get_service)) -> dict:
     result = service.mailto(payload)
     return {
-        "status": result.outcome,
-        "context": None if result.outcome == "SENT" else result.error
+        "status": result.Outcome,
+        "context": None if result.Outcome == "SENT" else result.Error
     }
