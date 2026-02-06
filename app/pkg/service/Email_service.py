@@ -1,6 +1,7 @@
 import json
 from app.pkg.config import mailer
 from app.pkg.domain import LogModel, Outcome
+from app.pkg.factory.dto.DTO_log import LogDTO
 from app.pkg.repository import email_repo, log_repo
 from app.pkg.factory import EmailDTO, LogDTO, email_model, log_dto
 
@@ -31,7 +32,7 @@ class MailerService:
             raise
 
         return log_dto(self.log_repo.insert(register))
-    
+
     def consume_message(self, msg: dict) -> LogDTO:
         return self.mailto(EmailDTO(
             Type=msg["Type"],

@@ -1,16 +1,18 @@
-from pkg.service import Service
-from pkg.factory import EmailDTO
-from pkg.config import Connection
+from app.pkg.service import Service
+from app.pkg.factory import EmailDTO
+from app.pkg.config import Connection
 from fastapi import APIRouter, Depends, status
-from pkg.repository import email_repo, log_repo
+from app.pkg.repository import email_repo, log_repo
 
 router = APIRouter(
     prefix="/api/internal/emails",
     tags=["emails"]
 )
 
+conn = Connection()
 
-def get_service(session=Depends(Connection.get_db)) -> Service:
+
+def get_service(session=conn.get_db) -> Service:
     return Service(email_repo(session), log_repo(session))
 
 

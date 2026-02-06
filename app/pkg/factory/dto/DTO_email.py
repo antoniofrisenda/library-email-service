@@ -8,4 +8,3 @@ class EmailDTO:
     To: str
     Subject: str
     Body: Optional[Dict] = None
-

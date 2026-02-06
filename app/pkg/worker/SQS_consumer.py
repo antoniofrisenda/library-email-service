@@ -1,5 +1,6 @@
-from app.pkg.api import instance 
-from app.pkg.config import receiver 
+from app.pkg.api import instance
+from app.pkg.config import receiver
+
 
 class SQSConsumer:
     def __init__(self):

@@ -14,6 +14,8 @@ def WeGood() -> dict:
 app.include_router(router)
 
 sqs = consumer()
+
+
 def start_consuming():
     sqs.consume_queue(None)
 
