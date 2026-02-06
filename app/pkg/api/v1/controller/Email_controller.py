@@ -12,7 +12,7 @@ router = APIRouter(
 conn = Connection()
 
 
-def get_service(session=conn.get_db) -> Service:
+def get_service(session=conn.get_db()) -> Service:
     return Service(email_repo(session), log_repo(session))
 
 
