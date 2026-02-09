@@ -1,3 +1,4 @@
+from io import BytesIO
 import json
 from app.pkg.config import mailer
 from app.pkg.domain import LogModel, Outcome
@@ -11,27 +12,35 @@ class MailerService:
         self.email_repo = repo1
         self.log_repo = repo2
 
-    def mailto(self, payload: EmailDTO) -> LogDTO:
+    def _send_email(self, payload: EmailDTO, file_name: str | None = None, file_bytes: BytesIO | None = None) -> LogDTO:
         model = self.email_repo.insert(email_model(payload))
-        register = None
+        log = None
 
         try:
             mailer(
                 to=payload.To,
                 subject=payload.Subject,
                 body=json.dumps(payload.Body or {}, ensure_ascii=False),
+                file_name=file_name,
+                file_bytes=file_bytes
             )
-            register = LogModel(Email_id=model._id, Outcome=Outcome.SENT)
+            log = LogModel(Email_id=model._id, Outcome=Outcome.SENT)
 
         except Exception as exc:
-            register = LogModel(
+            log = LogModel(
                 Email_id=model._id,
                 Outcome=Outcome.FAILED,
                 Error=str(exc)
             )
             raise
 
-        return log_dto(self.log_repo.insert(register))
+        return log_dto(self.log_repo.insert(log))
+
+    def mailto(self, payload: EmailDTO) -> LogDTO:
+        return self._send_email(payload)
+
+    def mailto_with_attachments(self, payload: EmailDTO, file_name: str, file_bytes: BytesIO) -> LogDTO:
+        return self._send_email(payload, file_name=file_name, file_bytes=file_bytes)
 
     def consume_message(self, msg: dict) -> LogDTO:
         return self.mailto(EmailDTO(
