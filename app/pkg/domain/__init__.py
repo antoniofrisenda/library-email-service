@@ -1,4 +1,4 @@
-from app.pkg.domain.model.Email_mongo_model import EmailModel, EmailType as Type
-from app.pkg.domain.model.Log_mongo_model import LogModel, EmailOutcome as Outcome
+from app.pkg.domain.model.email_document_persistence import EmailModel as Email, EmailType as Type
+from app.pkg.domain.model.log_document_persistence import LogModel as Log, EmailOutcome as Outcome
 
-__all__ = ["LogModel", "EmailModel", "Outcome", "Type"]
+__all__ = ["Email", "Log", "Outcome", "Type"]

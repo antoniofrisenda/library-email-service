@@ -1,3 +1,3 @@
-from app.pkg.worker.SQS_consumer import SQSConsumer as consumer
+from app.pkg.worker.sqs_consumer import SQSConsumer as consumer
 
 __all__ = ["consumer"]

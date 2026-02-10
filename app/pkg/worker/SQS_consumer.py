@@ -1,3 +1,4 @@
+import time
 from app.pkg.api import instance
 from app.pkg.config import receiver
 
@@ -8,9 +9,10 @@ class SQSConsumer:
         self.receiver = receiver()
 
     def consume_queue(self, msg: dict | None = None):
-        msg = msg or self.receiver.receive_sqs_message()
+        msg = msg or self.receiver.receive_sqs_msg()
         while msg:
             try:
-                self.service.consume_message(msg)
+                self.service.consume_sqs_msg(msg)
             finally:
-                msg = self.receiver.receive_sqs_message()
+                msg = self.receiver.receive_sqs_msg()
+        time.sleep(2)

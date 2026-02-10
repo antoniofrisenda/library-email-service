@@ -1,8 +1,8 @@
-from app.pkg.domain import EmailModel
+from app.pkg.domain import Email
 from pymongo.database import Database
-from .Base_repository import BaseRepository
+from app.pkg.repository.base_repository import BaseRepository as repo
 
 
-class EmailRepository(BaseRepository[EmailModel]):
+class EmailRepository(repo[Email]):
     def __init__(self, session: Database):
-        super().__init__(session["emails"], EmailModel)
+        super().__init__(session["emails"], Email)

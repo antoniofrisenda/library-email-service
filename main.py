@@ -1,17 +1,16 @@
-from fastapi import FastAPI
 from threading import Thread
 from app.pkg.api import router
 from app.pkg.worker import consumer
+from fastapi import FastAPI, Response, status
 
 app = FastAPI(title="Email Service")
-
-
-@app.get("/api/internal/emails/health-check/v1")
-def WeGood() -> dict:
-    return {"status": "ok"}
-
-
 app.include_router(router)
+
+
+@app.get("/healthz")
+def root(response: Response) -> None:
+    response.status_code = status.HTTP_200_OK
+
 
 sqs = consumer()
 

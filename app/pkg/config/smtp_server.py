@@ -15,10 +15,10 @@ def send_email_msg(to: str, subject: str, body: str, file_name: str | None  = No
     if file_name and file_bytes:
         file_data = file_bytes.getvalue()
         
-        mime_type, _ = mimetypes.guess_type(file_name)
-        if mime_type is None:
-            mime_type = "application/octet-stream"
-        maintype, subtype = mime_type.split("/", 1)
+        file_type, _ = mimetypes.guess_type(file_name)
+        if file_type is None:
+            file_type = "application/octet-stream"
+        maintype, subtype = file_type.split("/", 1)
         
         msg.add_attachment(
             file_data,
