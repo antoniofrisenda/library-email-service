@@ -1,6 +1,6 @@
 from threading import Thread
 from app.pkg.api import router
-from app.pkg.worker import consumer
+from app.pkg.worker import Consumer
 from fastapi import FastAPI, Response, status
 
 app = FastAPI(title="Email Service")
@@ -12,7 +12,7 @@ def root(response: Response) -> None:
     response.status_code = status.HTTP_200_OK
 
 
-sqs = consumer()
+sqs = Consumer()
 
 
 def start_consuming():

@@ -1,12 +1,12 @@
 import time
-from app.pkg.api import instance
-from app.pkg.config import receiver
+from app.pkg.api import Instance
+from app.pkg.config import Receiver
 
 
 class SQSConsumer:
     def __init__(self):
-        self.service = instance()
-        self.receiver = receiver()
+        self.service = Instance()
+        self.receiver = Receiver()
 
     def consume_queue(self, msg: dict | None = None):
         msg = msg or self.receiver.receive_sqs_msg()

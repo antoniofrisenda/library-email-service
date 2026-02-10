@@ -1,6 +1,6 @@
 import json
 from io import BytesIO
-from app.pkg.config import mailer
+from app.pkg.config import Mailer
 from app.pkg.domain import Log, Outcome
 from app.pkg.repository import email_repo, log_repo
 from app.pkg.factory import email_dto, log_dto, log_dto_map, email_model_map
@@ -16,7 +16,7 @@ class MailerService:
         log = None
 
         try:
-            mailer(
+            Mailer(
                 to=payload.To,
                 subject=payload.Subject,
                 body=json.dumps(payload.Body or {}, ensure_ascii=False),
