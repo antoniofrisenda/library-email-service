@@ -19,5 +19,4 @@ def start_consuming():
     sqs.consume_queue(None)
 
 
-# Loop in background
 Thread(target=start_consuming, daemon=True).start()
