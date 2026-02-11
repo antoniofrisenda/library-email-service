@@ -1,6 +1,6 @@
 from app.pkg.domain import Email
 from pymongo.database import Database
-from app.pkg.repository.base_db_repository import BaseRepository as repo
+from app.pkg.repository.base_repository import BaseRepository as repo
 
 
 class EmailRepository(repo[Email]):

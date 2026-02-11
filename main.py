@@ -1,6 +1,6 @@
 from threading import Thread
 from app.pkg.api import router
-from app.pkg.worker import Consumer
+from app.pkg.service import Consumer
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response, status
 
