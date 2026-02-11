@@ -13,15 +13,10 @@ class BaseRepository(Generic[T]):
 
     def _to_mongo(self, obj: T) -> dict:
         data = asdict(obj)  # type: ignore
-        if "id" in data:
-            data["_id"] = data.pop("id")
         return data
 
     def _from_mongo(self, data: dict) -> T:
-        data = data.copy()
-        if "_id" in data:
-            data["id"] = data.pop("_id")
-        return self.model(**data)
+        return self.model(**data.copy())
 
     def insert(self, obj: T) -> T:
         data = self._to_mongo(obj)

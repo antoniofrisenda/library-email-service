@@ -2,6 +2,7 @@ from io import BytesIO
 from typing import Optional
 from app.pkg.service import Service
 from app.pkg.config import Connection
+from pymongo.database import Database
 from app.pkg.factory import email_dto as Request
 from app.pkg.repository import email_repo, log_repo
 from fastapi import APIRouter, Depends, File, UploadFile, status
@@ -14,7 +15,7 @@ router = APIRouter(
 conn = Connection()
 
 
-def _get_service(session=conn.get_db()) -> Service:
+def _get_service(session: Database = Depends(conn.get_db)) -> Service:
     return Service(email_repo(session), log_repo(session))
 
 

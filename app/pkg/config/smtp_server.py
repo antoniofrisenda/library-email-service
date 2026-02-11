@@ -20,8 +20,7 @@ def send_email_msg(to: str, subject: str, body: str, file_name: str | None  = No
             file_type = "application/octet-stream"
         maintype, subtype = file_type.split("/", 1)
         
-        msg.add_attachment(
-            file_data,
+        msg.add_attachment(file_data,
             maintype=maintype,
             subtype=subtype,
             filename=file_name
