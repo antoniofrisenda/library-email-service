@@ -1,8 +1,11 @@
 from threading import Thread
 from app.pkg.api import router
 from app.pkg.service import Consumer
+from app.pkg.settings import setup_logger
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response, status
+
+setup_logger()
 
 def start_consuming(sqs = Consumer()):
     sqs.consume_queue(None)

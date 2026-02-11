@@ -13,7 +13,7 @@ class SMTPServer:
         self.password = str(os.getenv("SMTP_PASSWORD"))
 
         if not all([self.host, self.username, self.password]):
-            raise ValueError("SMTP_HOST, SMTP_USERNAME and SMTP_PASSWORD are required")
+            raise ValueError("Missing credentials are required")
 
     def send_email_msg(self, to: str, subject: str, body: str,
                        file_name: str | None = None,

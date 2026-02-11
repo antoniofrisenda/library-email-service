@@ -4,7 +4,7 @@ from app.pkg.config import Connection
 
 conn = Connection()
 
-def _create_service(session=None) -> Service:
+def _create_instance(session=None) -> Service:
     if session is None:
         session = conn.get_db()
 

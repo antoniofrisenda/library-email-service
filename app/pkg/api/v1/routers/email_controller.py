@@ -1,8 +1,8 @@
 from io import BytesIO
 from typing import Optional
-from app.pkg.config import Connection
+from app.pkg.service import Service
 from app.pkg.factory import Dto as Request
-from app.pkg.service import Service, create_service
+from app.pkg.settings import create_instance, conn
 from fastapi import APIRouter, Depends, File, UploadFile, status, Body
 
 router = APIRouter(
@@ -10,11 +10,8 @@ router = APIRouter(
     tags=["Emails"],
 )
 
-conn = Connection()
-
-
 def _get_service(session=Depends(conn.get_db)) -> Service:
-    return create_service(session)
+    return create_instance(session)
 
 
 @router.post("/v1", status_code=status.HTTP_202_ACCEPTED)
