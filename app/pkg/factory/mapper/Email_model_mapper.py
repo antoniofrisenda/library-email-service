@@ -1,8 +1,8 @@
-from app.pkg.factory import email_dto
+from app.pkg.factory import Dto
 from app.pkg.domain import Email, Type
 
 
-def _to_email_model(dto: email_dto) -> Email:
+def _to_email_model(dto: Dto) -> Email:
     return Email(
         Type=Type(dto.Type),
         To=dto.To,
@@ -11,8 +11,8 @@ def _to_email_model(dto: email_dto) -> Email:
     )
 
 
-def _from_email_model(model: Email) -> email_dto:
-    return email_dto(
+def _from_email_model(model: Email) -> Dto:
+    return Dto(
         Type=model.Type.value,
         To=model.To,
         Subject=model.Subject,

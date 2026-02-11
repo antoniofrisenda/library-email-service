@@ -1,4 +1,3 @@
-from .log_repository import LogRepository as log_repo
-from .email_repository import EmailRepository as email_repo
+from app.pkg.repository.email_repository import EmailRepository as Repo
 
-__all__ = ["email_repo", "log_repo"]
+__all__ = ["Repo"]

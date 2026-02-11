@@ -1,3 +1,3 @@
-from app.pkg.api.v1.routers.email_controller import router, _get_service as Instance
+from app.pkg.api.v1.routers.email_controller import router
 
-__all__ = ["router", "Instance"]
+__all__ = ["router"]

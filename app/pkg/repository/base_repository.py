@@ -12,8 +12,7 @@ class BaseRepository(Generic[T]):
         self.model = model
 
     def _to_mongo(self, obj: T) -> dict:
-        data = asdict(obj)  # type: ignore
-        return data
+        return asdict(obj)# type: ignore
 
     def _from_mongo(self, data: dict) -> T:
         return self.model(**data.copy())
@@ -30,8 +29,7 @@ class BaseRepository(Generic[T]):
         return self._from_mongo(data)
 
     def find_all(self, skip: int = 0, limit: int = 1000) -> list[T]:
-        cursor = self.collection.find().skip(skip).limit(limit)
-        return [self._from_mongo(data) for data in cursor]
+        return [self._from_mongo(data) for data in self.collection.find().skip(skip).limit(limit)]
 
     def delete_by_id(self, Id: ObjectId) -> bool:
         return self.collection.delete_one({"_id": Id}).deleted_count > 0
