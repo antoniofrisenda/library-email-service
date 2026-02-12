@@ -1,23 +1,34 @@
+import logging
 from threading import Thread
 from app.pkg.api import router
+from app.pkg.util import LOG_SETUP
 from app.pkg.service import Consumer
-from app.pkg.settings import setup_logger
+from logging.config import dictConfig
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response, status
 
-setup_logger()
+dictConfig(LOG_SETUP)
 
-def start_consuming(sqs = Consumer()):
-    sqs.consume_queue(None)
+logger = logging.getLogger("app")
+
+
+def start_consuming():
+    try:
+        Consumer().consume_queue()
+    except Exception:
+        logger.exception("Consumer crashed")
+
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def _on_launch(_: FastAPI):
     Thread(target=start_consuming, daemon=True).start()
-    yield 
+    yield
 
-app = FastAPI(title="Email Service", lifespan=lifespan)
-app.include_router(router)
+app = FastAPI(title="Email Service", lifespan=_on_launch)
+
 
 @app.get("/healthz")
-def root(response: Response) -> None:
+async def ping(response: Response) -> None:
     response.status_code = status.HTTP_200_OK
+
+app.include_router(router)

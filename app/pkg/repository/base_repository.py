@@ -7,12 +7,12 @@ T = TypeVar("T")
 
 
 class BaseRepository(Generic[T]):
-    def __init__(self, collection: Collection, model: Type[T]):
+    def __init__(self, collection: Collection, model: Type[T]) -> None:
         self.collection = collection
         self.model = model
 
     def _to_mongo(self, obj: T) -> dict:
-        return asdict(obj)# type: ignore
+        return asdict(obj)  # type: ignore
 
     def _from_mongo(self, data: dict) -> T:
         return self.model(**data.copy())

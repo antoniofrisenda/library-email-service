@@ -1,25 +1,20 @@
-import os
 import smtplib
 import mimetypes
 from io import BytesIO
+from app.pkg.util import get_env
 from email.message import EmailMessage
 
-
 class SMTPServer:
-    def __init__(self):
-        self.host = str(os.getenv("SMTP_HOST"))
-        self.port = int(os.getenv("SMTP_PORT", "2525"))
-        self.username = str(os.getenv("SMTP_USERNAME"))
-        self.password = str(os.getenv("SMTP_PASSWORD"))
+    def __init__(self) -> None:
+        self.host = str(get_env("SMTP_HOST"))
+        self.port = int(get_env("SMTP_PORT"))
+        self.username = str(get_env("SMTP_USERNAME"))
+        self.password = str(get_env("SMTP_PASSWORD"))
 
         if not all([self.host, self.username, self.password]):
             raise ValueError("Missing credentials are required")
 
-    def send_email_msg(self, to: str, subject: str, body: str,
-                       file_name: str | None = None,
-                       file_bytes: BytesIO | None = None
-                    ):
-
+    def send_email_msg(self, to: str, subject: str, body: str, file_name: str | None = None, file_bytes: BytesIO | None = None) -> None:
         msg = EmailMessage()
         msg["To"] = to
         msg["From"] = "Email Service <noreply@vidyasoft.com>"
@@ -42,7 +37,7 @@ class SMTPServer:
                 filename=file_name
             )
 
-            with smtplib.SMTP(self.host, self.port, timeout=5) as server:
-                server.starttls()
-                server.login(self.username, self.password)
-                server.send_message(msg)
+        with smtplib.SMTP(self.host, self.port, timeout=5) as server:
+            server.starttls()
+            server.login(self.username, self.password)
+            server.send_message(msg)

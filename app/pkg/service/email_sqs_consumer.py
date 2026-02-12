@@ -1,26 +1,41 @@
 import time
-from loguru import logger
+import logging
 from app.pkg.config import Receiver
-from app.pkg.settings import create_instance
+from app.pkg.service import Service
+from app.pkg.repository import Repo
+from app.pkg.config import Connection
+
+
+logger = logging.getLogger("app")
 
 
 class SQSConsumer:
-    def __init__(self):
-        self.service = create_instance()
-        self.receiver = Receiver()
+    def __init__(self) -> None:
+        try:
+            self.service = Service(Repo(Connection().get_db()))
+            self.receiver = Receiver()
+            logger.info("Consumer init OK")
+        except Exception:
+            logger.warning("init Consumer failed")
+            raise
 
-    def consume_queue(self, msg: dict | None = None) -> None:
+    def consume_queue(self) -> None:
         logger.info("Consumer waiting...")
-        msg = msg or self.receiver.receive_sqs_msg()
 
-        while msg:
-            logger.bind(message_type=msg.get("Type"), to=msg.get("To")).info("Received")
+        while True:
+            msg = self.receiver.receive_sqs_msg()
+
+            if not msg:
+                logger.info("Sleeping")
+                time.sleep(2)
+                continue
+
+            logger.info(
+                f"Received | "f"raw mgs={msg}" f"message_type={msg.get('Type')} " f"to={msg.get('To')}")
 
             try:
                 self.service.consume_sqs_msg(msg)
-                logger.bind(message_type=msg.get("Type"), to=msg.get("To")).info("SQS queue processed", payload=msg)
-            finally:
-                msg = self.receiver.receive_sqs_msg()
+                logger.info(f"SQS queue processed")
 
-        logger.debug("Sleeping")
-        time.sleep(2)
+            except Exception:
+                logger.warning(f"Message: {msg} not processed")
