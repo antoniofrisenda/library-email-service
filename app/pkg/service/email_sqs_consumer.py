@@ -1,9 +1,9 @@
 import time
 import logging
-from app.pkg.config import Receiver
+from app.pkg.aws import Receiver
 from app.pkg.service import Service
 from app.pkg.repository import Repo
-from app.pkg.config import Connection
+from app.pkg.mongo import Connection
 
 
 logger = logging.getLogger("app")
