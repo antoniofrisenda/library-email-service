@@ -2,12 +2,8 @@ import time
 import logging
 from app.pkg.aws import Receiver
 from app.pkg.service import Service
-from app.pkg.repository import Repo
-from app.pkg.mongo import Connection
-
 
 logger = logging.getLogger("app")
-
 
 class SQSConsumer:
     def __init__(self, queue: Receiver, service: Service) -> None:
