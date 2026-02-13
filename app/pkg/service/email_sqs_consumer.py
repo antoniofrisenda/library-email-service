@@ -10,9 +10,9 @@ logger = logging.getLogger("app")
 
 
 class SQSConsumer:
-    def __init__(self, queue: Receiver) -> None:
+    def __init__(self, queue: Receiver, service: Service) -> None:
         try:
-            self.service = Service(Repo(Connection().get_db()))
+            self.service = service
             self.receiver = queue
             logger.info("Consumer init OK")
         except Exception:

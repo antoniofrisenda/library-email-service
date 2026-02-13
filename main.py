@@ -1,11 +1,11 @@
 import logging
 from threading import Thread
-from app.pkg.api import router
 from app.pkg.aws import Receiver
 from app.pkg.util import LOG_SETUP
 from app.pkg.service import Consumer
 from logging.config import dictConfig
 from contextlib import asynccontextmanager
+from app.pkg.api import router, get_instance
 from fastapi import FastAPI, Response, status
 
 dictConfig(LOG_SETUP)
@@ -17,7 +17,7 @@ def _get_queue() -> Receiver:
 
 def start_consuming():
     try:
-        Consumer(_get_queue()).consume_queue()
+        Consumer(_get_queue(), get_instance()).consume_queue()
     except Exception:
         logger.exception("Consumer crashed")
 
