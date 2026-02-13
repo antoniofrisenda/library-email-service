@@ -1,6 +1,7 @@
 import logging
 from threading import Thread
 from app.pkg.api import router
+from app.pkg.aws import Receiver
 from app.pkg.util import LOG_SETUP
 from app.pkg.service import Consumer
 from logging.config import dictConfig
@@ -11,10 +12,12 @@ dictConfig(LOG_SETUP)
 
 logger = logging.getLogger("app")
 
+def _get_queue() -> Receiver:
+    return Receiver()
 
 def start_consuming():
     try:
-        Consumer().consume_queue()
+        Consumer(_get_queue()).consume_queue()
     except Exception:
         logger.exception("Consumer crashed")
 
