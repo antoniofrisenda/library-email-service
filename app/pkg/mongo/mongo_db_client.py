@@ -1,12 +1,14 @@
+from dataclasses import dataclass
 from pymongo import MongoClient
-from app.pkg.util import get_env
 from pymongo.database import Database
 
+@dataclass
 class MongoConnection:
-    def __init__(self) -> None:
-        self.mongo_client = MongoClient(get_env("MONGO_URI"))
-        self.mongo_client.admin.command("ping")
-        self.db = self.mongo_client[str(get_env("MONGO_DB_NAME"))]
+    client: MongoClient
+    database: Database
+    
 
-    def get_db(self) -> Database:
-        return self.db
+def get_mongoDb(mongo_url: str, db_name: str) -> MongoConnection:
+        client = MongoClient(mongo_url)
+        client.admin.command("ping")
+        return MongoConnection(client=client, database=client[db_name])

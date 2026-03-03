@@ -1,8 +1,10 @@
 from io import BytesIO
 from typing import Optional
+from app.pkg.util import get_env
 from app.pkg.service import Service
 from app.pkg.repository import Repo
 from app.pkg.mongo import Connection
+from pymongo.database import Database
 from app.pkg.factory import Dto as Request
 from fastapi import APIRouter, Depends, File, UploadFile, status, Body
 
@@ -11,8 +13,14 @@ router = APIRouter(
     tags=["Emails"],
 )
 
+
+mongo = Connection(mongo_url=get_env("MONGO_URI"), db_name=get_env("MONGO_DB_NAME"))
+
+def get_session() -> Database:
+    return mongo.database 
+
 def _get_instance() -> Service:
-    return Service(Repo(Connection().get_db()))
+    return Service(Repo(get_session()))
 
 
 @router.post("/v1", status_code=status.HTTP_202_ACCEPTED)

@@ -1,12 +1,16 @@
 import json
 import boto3
+import logging
 from typing import Any
+from botocore.exceptions import ClientError
 from app.pkg.util import get_env
+
+logger = logging.getLogger("app")
 
 class SQSClient:
     def __init__(self) -> None:
-        self.queue_url = get_env("SQS_QUEUE")
-        if not self.queue_url:
+        queue_value = get_env("SQS_QUEUE")
+        if not queue_value:
             raise ValueError("SQS_QUEUE env var required")
         
         self.sqs_client = boto3.client("sqs", endpoint_url=get_env("AWS_ENDPOINT_URL"),
@@ -14,13 +18,29 @@ class SQSClient:
             aws_access_key_id=get_env("AWS_ACCESS_KEY"),
             aws_secret_access_key=get_env("AWS_SECRET_KEY")
         )
+        self.queue_name = queue_value.rstrip("/").split("/")[-1]
+        self.queue_url = queue_value if queue_value.startswith(("http://", "https://")) else ""
+
+    def _resolve_queue_url(self) -> str:
+        response = self.sqs_client.get_queue_url(QueueName=self.queue_name)
+        return response["QueueUrl"]
 
     def receive_sqs_msg(self) -> dict[str, Any] | None:
-        response = self.sqs_client.receive_message(
-            QueueUrl=self.queue_url,
-            WaitTimeSeconds=10,
-            MaxNumberOfMessages=1
-        )
+        try:
+            if not self.queue_url:
+                self.queue_url = self._resolve_queue_url()
+            response = self.sqs_client.receive_message(
+                QueueUrl=self.queue_url,
+                WaitTimeSeconds=10,
+                MaxNumberOfMessages=1
+            )
+        except ClientError as exc:
+            error_code = exc.response.get("Error", {}).get("Code")
+            if error_code in ("AWS.SimpleQueueService.NonExistentQueue", "QueueDoesNotExist"):
+                logger.warning("SQS queue not available yet, retrying")
+                self.queue_url = ""
+                return None
+            raise
 
         messages = response.get("Messages")
         if not messages:
