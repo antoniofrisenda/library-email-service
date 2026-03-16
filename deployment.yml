@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: email-service
-          image: 192.168.1.10:5000/email-service:latest
+          image: 192.168.1.10:8083/library/email-service:latest
           env:
             - name: AWS_REGION
               value: "eu-west-1"
