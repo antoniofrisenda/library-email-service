@@ -16,9 +16,19 @@ spec:
         - name: email-service
           image: 192.168.1.10:5000/library/email-service:latest
           env:
-            - name: AWS_REGION
-              value: "eu-west-1"
-            - name: AWS_SQS_QUEUE_URL
-              value: ""
+            - name: MONGO_DB_NAME
+              value: "email_service"
+            - name: MONGO_URI
+              value: "mongodb://root:pass@192.168.1.10:27017/email_service?authSource=admin&retryWrites=true&w=majority"
+            - name: SQS_QUEUE
+              value: "email-queue"
+            - name: AWS_ENDPOINT_URL
+              value: "http://192.168.1.10:4566"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY
+              value: "test"
+            - name: AWS_SECRET_KEY
+              value: "test"
           ports:
             - containerPort: 5000
