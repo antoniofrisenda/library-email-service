@@ -6,7 +6,8 @@ spec:
   selector:
     app: email-service
   ports:
-    - protocol: TCP
-      port: 5000
-      targetPort: 5000
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8080
   type: ClusterIP

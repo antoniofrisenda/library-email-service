@@ -15,6 +15,11 @@ spec:
       containers:
         - name: email-service
           image: 192.168.1.10:5000/library/email-service:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
           env:
             - name: MONGO_DB_NAME
               value: "email_service"
@@ -30,5 +35,21 @@ spec:
               value: "test"
             - name: AWS_SECRET_KEY
               value: "test"
-          ports:
-            - containerPort: 5000
+              
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
