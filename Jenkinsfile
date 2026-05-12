@@ -28,7 +28,7 @@ pipeline {
                         --pkg-types os,library \
                         --no-progress \
                         --show-suppressed \
-                        email-service:latest || True
+                        email-service:latest || true
                 ''' 
             }
         }
