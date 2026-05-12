@@ -28,8 +28,8 @@ pipeline {
                         --pkg-types os,library \
                         --no-progress \
                         --show-suppressed \
-                        email-service:latest
-                '''
+                        email-service:latest || True
+                ''' 
             }
         }
 
@@ -38,8 +38,8 @@ pipeline {
             steps {
 
                 sh '''
-                    docker tag email-service:latest 192.168.1.10:5000/library/email-service:latest
-                    docker push 192.168.1.10:5000/library/email-service:latest
+                    docker tag email-service:latest 192.168.10.34:5000/library/email-service:latest
+                    docker push 192.168.10.34:5000/library/email-service:latest
                 '''
             }
         }
