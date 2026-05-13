@@ -38,7 +38,7 @@ spec:
             - name: SMTP_HOST
               value: "sandbox.smtp.mailtrap.io"
             - name: SMTP_PORT
-              value: 2525
+              value: "2525"
             - name: SMTP_USERNAME
               value: "938bdceb9836da"
             - name: SMTP_PASSWORD
