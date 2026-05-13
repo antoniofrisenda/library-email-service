@@ -36,13 +36,13 @@ spec:
             - name: AWS_SECRET_KEY
               value: "test"
             - name: SMTP_HOST
-              value: sandbox.smtp.mailtrap.io
+              value: "sandbox.smtp.mailtrap.io"
             - name: SMTP_PORT
               value: 2525
             - name: SMTP_USERNAME
-              value: 938bdceb9836da
+              value: "938bdceb9836da"
             - name: SMTP_PASSWORD
-              value: b12d7a09151be5
+              value: "b12d7a09151be5"
               
           livenessProbe:
             httpGet:
