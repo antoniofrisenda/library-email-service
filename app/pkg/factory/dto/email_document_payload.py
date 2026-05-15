@@ -19,10 +19,16 @@ class EmailDTO(BaseModel):
             stripped = value.strip()
             if not stripped:
                 return None
-            parsed = json.loads(stripped)
-            if not isinstance(parsed, dict):
-                return {"Valore": parsed}
-            return parsed
+            parsed: Any = stripped
+            for _ in range(4):
+                if not isinstance(parsed, str):
+                    break
+                parsed = json.loads(parsed)
+            if isinstance(parsed, dict):
+                return parsed
+            if isinstance(parsed, list):
+                return {"Elementi": parsed}
+            return {"Valore": parsed}
         if isinstance(value, dict):
             return value
         return {"Valore": value}
