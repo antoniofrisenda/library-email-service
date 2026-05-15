@@ -1,8 +1,8 @@
-import json
 import logging
 from io import BytesIO
 from app.pkg.domain import Type
 from app.pkg.config import Mailer
+from app.pkg.middleware import format_email_body, format_email_subject
 from app.pkg.repository import Repo
 from app.pkg.factory import Dto, email_model
 
@@ -31,10 +31,12 @@ class MailerService:
         )
 
         try:
+            plain_body, html_body = format_email_body(payload.Type, payload.Body)
             self.server.send_email_msg(
                 to=payload.To,
                 subject=payload.Subject,
-                body=json.dumps(payload.Body or {}, ensure_ascii=False),
+                body=plain_body,
+                html_body=html_body,
                 file_name=file_name,
                 file_bytes=file_bytes,
             )
@@ -64,6 +66,6 @@ class MailerService:
         self.mailto(Dto(
             Type=Type.RESERVE.value,
             To=str(msg.get("user_email")),
-            Subject=f"Reservation confirmed for book {reservation.get('book_id')}",
+            Subject=format_email_subject(Type.RESERVE.value, reservation),
             Body=reservation,
         ))

@@ -14,12 +14,22 @@ class SMTPServer:
         if not all([self.host, self.username, self.password]):
             raise ValueError("Missing credentials are required")
 
-    def send_email_msg(self, to: str, subject: str, body: str, file_name: str | None = None, file_bytes: BytesIO | None = None) -> None:
+    def send_email_msg(
+        self,
+        to: str,
+        subject: str,
+        body: str,
+        html_body: str | None = None,
+        file_name: str | None = None,
+        file_bytes: BytesIO | None = None,
+    ) -> None:
         msg = EmailMessage()
         msg["To"] = to
         msg["From"] = "Email Service <noreply@vidyasoft.com>"
         msg["Subject"] = subject
         msg.set_content(body)
+        if html_body:
+            msg.add_alternative(html_body, subtype="html")
 
         if file_name and file_bytes:
             file_type, _ = mimetypes.guess_type(file_name)
