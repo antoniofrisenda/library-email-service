@@ -1,3 +1,13 @@
-from app.pkg.middleware.email_formatter import format_email_body, format_email_subject
+from app.pkg.middleware.email_formatter import (
+    extract_body_from_message,
+    format_email_body,
+    format_email_subject,
+    normalize_body,
+)
 
-__all__ = ["format_email_body", "format_email_subject"]
+__all__ = [
+    "extract_body_from_message",
+    "format_email_body",
+    "format_email_subject",
+    "normalize_body",
+]

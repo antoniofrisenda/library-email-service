@@ -48,7 +48,8 @@ class SQSClient:
 
         msg = messages[0]
         body = json.loads(msg["Body"])
-        content = json.loads(body["Message"])
+        message = body.get("Message", body)
+        content = json.loads(message) if isinstance(message, str) else message
 
         self.sqs_client.delete_message(
             QueueUrl=self.queue_url,

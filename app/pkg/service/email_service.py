@@ -1,8 +1,14 @@
+import json
 import logging
 from io import BytesIO
 from app.pkg.domain import Type
 from app.pkg.config import Mailer
-from app.pkg.middleware import format_email_body, format_email_subject
+from app.pkg.middleware import (
+    extract_body_from_message,
+    format_email_body,
+    format_email_subject,
+    normalize_body,
+)
 from app.pkg.repository import Repo
 from app.pkg.factory import Dto, email_model
 
@@ -21,20 +27,22 @@ class MailerService:
             raise
 
     def _send_email(self, payload: Dto, file_name: str | None = None, file_bytes: BytesIO | None = None) -> None:
+        body = normalize_body(payload.Body)
+        subject = payload.Subject or format_email_subject(payload.Type, body)
         model = self.repository.insert(email_model(payload))
 
         logger.info(
             f"Email saved | "
             f"email_id={getattr(model, '_id', None)} "
             f"to={payload.To} "
-            f"subject={payload.Subject}"
+            f"subject={subject}"
         )
 
         try:
-            plain_body, html_body = format_email_body(payload.Type, payload.Body)
+            plain_body, html_body = format_email_body(payload.Type, body)
             self.server.send_email_msg(
                 to=payload.To,
-                subject=payload.Subject,
+                subject=subject,
                 body=plain_body,
                 html_body=html_body,
                 file_name=file_name,
@@ -58,14 +66,21 @@ class MailerService:
             file_bytes=file_bytes,
         )
 
-    def consume_sqs_msg(self, msg: dict) -> None:
-        reservation = msg.get("reservation", {})
+    def consume_sqs_msg(self, msg: dict | str) -> None:
+        parsed: dict = json.loads(msg) if isinstance(msg, str) else msg
 
-        logger.info(f"Processing SQS message | " f"msg={msg} ")
+        logger.info(f"Processing SQS message | msg={parsed} ")
+
+        email_type = str(parsed.get("Type") or parsed.get("type") or Type.RESERVE.value)
+        body = extract_body_from_message(parsed)
+        to = parsed.get("To") or parsed.get("to") or parsed.get("user_email")
+        subject = parsed.get("Subject") or parsed.get("subject") or format_email_subject(
+            email_type, body
+        )
 
         self.mailto(Dto(
-            Type=Type.RESERVE.value,
-            To=str(msg.get("user_email")),
-            Subject=format_email_subject(Type.RESERVE.value, reservation),
-            Body=reservation,
+            Type=email_type,
+            To=str(to),
+            Subject=subject,
+            Body=body,
         ))

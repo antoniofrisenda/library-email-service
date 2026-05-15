@@ -1,7 +1,13 @@
+import json
 from html import escape
 from typing import Any
 
 from app.pkg.domain import Type
+
+_META_KEYS = frozenset({
+    "Type", "type", "To", "to", "Subject", "subject",
+    "user_email", "userEmail", "From", "from",
+})
 
 _FIELD_LABELS: dict[str, str] = {
     "book_id": "Libro",
@@ -33,16 +39,78 @@ def _humanize_key(key: str) -> str:
     return _FIELD_LABELS.get(key, key.replace("_", " ").strip().capitalize())
 
 
+def _try_parse_json_string(value: str) -> Any | None:
+    stripped = value.strip()
+    if not stripped.startswith(("{", "[")):
+        return None
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        return None
+
+
+def normalize_body(body: Any) -> dict:
+    if body is None:
+        return {}
+    if isinstance(body, str):
+        parsed = _try_parse_json_string(body)
+        return normalize_body(parsed if parsed is not None else {"Messaggio": body})
+    if isinstance(body, list):
+        return {"Elementi": body}
+    if not isinstance(body, dict):
+        return {"Valore": body}
+
+    for key in ("Body", "body", "reservation", "data", "payload", "message"):
+        nested = body.get(key)
+        if nested is not None:
+            normalized = normalize_body(nested)
+            if normalized:
+                extras = {
+                    k: v for k, v in body.items()
+                    if k not in ("Body", "body", "reservation", "data", "payload", "message")
+                    and k not in _META_KEYS
+                }
+                return {**extras, **normalized}
+
+    return {
+        key: _normalize_field_value(value)
+        for key, value in body.items()
+    }
+
+
+def _normalize_field_value(value: Any) -> Any:
+    if isinstance(value, str):
+        parsed = _try_parse_json_string(value)
+        if parsed is not None:
+            return parsed
+    return value
+
+
 def _format_value(value: Any) -> str:
     if value is None:
         return "—"
     if isinstance(value, bool):
         return "Sì" if value else "No"
+    if isinstance(value, str):
+        parsed = _try_parse_json_string(value)
+        if parsed is not None:
+            return _format_value(parsed)
+        return value
     if isinstance(value, (list, tuple)):
         return ", ".join(_format_value(item) for item in value)
     if isinstance(value, dict):
         return "; ".join(f"{_humanize_key(k)}: {_format_value(v)}" for k, v in value.items())
     return str(value)
+
+
+def extract_body_from_message(msg: dict) -> dict:
+    for key in ("Body", "body", "reservation", "data", "payload", "message"):
+        if key in msg:
+            return normalize_body(msg[key])
+    return normalize_body({
+        k: v for k, v in msg.items()
+        if k not in _META_KEYS
+    })
 
 
 def _format_plain(email_type: str, body: dict) -> str:
@@ -85,8 +153,8 @@ def _format_html(email_type: str, body: dict) -> str:
 </html>"""
 
 
-def format_email_subject(email_type: str, body: dict | None) -> str:
-    data = body or {}
+def format_email_subject(email_type: str, body: Any = None) -> str:
+    data = normalize_body(body)
     template = _TYPE_SUBJECTS.get(email_type, _DEFAULT_SUBJECT)
     try:
         return template.format(**data)
@@ -94,8 +162,8 @@ def format_email_subject(email_type: str, body: dict | None) -> str:
         return _DEFAULT_SUBJECT
 
 
-def format_email_body(email_type: str, body: dict | None) -> tuple[str, str]:
-    data = body or {}
+def format_email_body(email_type: str, body: Any = None) -> tuple[str, str]:
+    data = normalize_body(body)
     plain = _format_plain(email_type, data)
     html = _format_html(email_type, data)
     return plain, html
